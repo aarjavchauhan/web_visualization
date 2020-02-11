@@ -1,9 +1,7 @@
 from bs4 import BeautifulSoup
-
 import requests
 
-r = requests.get("http://quotes.toscrape.com/")
-
+r = requests.get("https://berobinhood.com/")
 soup = BeautifulSoup(r.content, 'html.parser')
 
 for link in soup.find_all('a'):
