@@ -88,7 +88,7 @@ def establish_relationships(source_url, hrefs, layer):
             if(check_manual_URL_rules(broken_down_link)):
                 destination_urls.append(broken_down_link)
             relationships.append({'from':source_url, 'to':broken_down_link, 'layer':layer})
-            print(layer)
+            #print(layer)
     urls_already_processed.add(source_url)
     return destination_urls
 
