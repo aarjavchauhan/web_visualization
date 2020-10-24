@@ -14,7 +14,6 @@ var text_center = false;
 var min_score = 0;
 var max_score = 1;
 
-
 var highlight_color = "red";
 var highlight_trans = 0.1;
 
@@ -78,7 +77,7 @@ d3.json("results.json", function(error, graph) {
     	.data(graph.nodes)
     	.enter().append("g")
     	.attr("class", "node")
-    	.call(force.drag)
+        .call(force.drag)
 
 
 	var tocolor = "fill";

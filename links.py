@@ -43,7 +43,7 @@ def read_file(file_name):
     with open(file_name) as file:
         for line in file:
             parsed_url = parse_url(line.strip())
-            if(parsed_url):
+            if parsed_url:
                 urls_from_file.append(parsed_url)
 
 """
