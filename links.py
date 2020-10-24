@@ -21,7 +21,7 @@ returns a python readable file location
 """
 def find_file():
     THIS_FOLDER = os.path.dirname(os.path.abspath(__file__))
-    file_name = os.path.join(THIS_FOLDER, 'links.txt')
+    file_name = os.path.join(THIS_FOLDER, 'data1.json')
     return file_name
 
 """
@@ -43,6 +43,15 @@ def read_file(file_name):
     with open(file_name) as file:
         for line in file:
             parsed_url = parse_url(line.strip())
+            if(parsed_url):
+                urls_from_file.append(parsed_url)
+
+def read_file_json(file_name):
+    with open(file_name) as file:
+        data = file.read()
+        pretty_json = json.loads(data)
+        for struct in pretty_json:
+            parsed_url = parse_url(struct["url"])
             if parsed_url:
                 urls_from_file.append(parsed_url)
 
@@ -119,7 +128,8 @@ def main():
 
     #Establish file location, read and parse file
     file_name = find_file()
-    read_file(file_name)
+    ##read_file(file_name)
+    read_file_json(file_name)
 
     #Get initial links and establish relationships
     #of links from file
@@ -163,6 +173,6 @@ if __name__== "__main__":
 
   print('\n\n\nPrinting Dataset \n\n\n')
   print(dataset)
-#   print(urls_to_process)
+
   with open('results.json', 'w') as f:
-      json.dump(dataset, f)
+     json.dump(dataset, f)
