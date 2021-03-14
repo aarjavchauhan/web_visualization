@@ -20,10 +20,12 @@ var highlight_trans = 0.1;
 var size = d3.scale.pow().exponent(1)
 	.domain([1,100])
 	.range([8,24]);
+	
 force = d3.layout.force()
 	.linkDistance(60)
 	.charge(-300)
-	.size([w,h]);
+	.size([w,h])
+	.gravity(0.1);
 
 var default_node_color = "#ccc";
 var default_link_color = "#888";
@@ -77,7 +79,7 @@ d3.json("results.json", function(error, graph) {
     	.data(graph.nodes)
     	.enter().append("g")
     	.attr("class", "node")
-        .call(force.drag)
+        .call(force.drag);
 
 
 	var tocolor = "fill";
@@ -223,6 +225,8 @@ d3.json("results.json", function(error, graph) {
 
 	d3.select(window).on("resize", resize);
 
+    var i = 0;
+        
 	force.on("tick", function() {
 
 		node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
@@ -235,9 +239,15 @@ d3.json("results.json", function(error, graph) {
 
     	node.attr("cx", function(d) { return d.x; })
       		.attr("cy", function(d) { return d.y; });
+        if (i < 300) {
+            ++i;
+        } else {
+            force.stop();   
+        }
 	});
+	
 
-	function resize() {
+    function resize() {
 		var width = window.innerWidth, height = window.innerHeight;
 		svg.attr("width", width).attr("height", height);
 

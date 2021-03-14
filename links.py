@@ -21,7 +21,7 @@ returns a python readable file location
 """
 def find_file():
     THIS_FOLDER = os.path.dirname(os.path.abspath(__file__))
-    file_name = os.path.join(THIS_FOLDER, 'data1.json')
+    file_name = os.path.join(THIS_FOLDER, 'rmarton_3.6.21.json')
     return file_name
 
 """
