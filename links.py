@@ -124,7 +124,7 @@ Main function
 def main():
     #constant that represents how many links in urls_to_process
     #should be processed
-    NUMBER_OF_LAYERS_TO_PROCESS = 1
+    NUMBER_OF_LAYERS_TO_PROCESS = 2
 
     #Establish file location, read and parse file
     file_name = find_file()
