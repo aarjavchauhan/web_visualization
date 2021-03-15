@@ -50,10 +50,12 @@ def read_file_json(file_name):
     with open(file_name) as file:
         data = file.read()
         pretty_json = json.loads(data)
+        #for struct in pretty_json:
         for struct in pretty_json:
             parsed_url = parse_url(struct["url"])
             if parsed_url:
                 urls_from_file.append(parsed_url)
+            
 
 """
 Gets all the links on a webpage
@@ -61,11 +63,13 @@ Gets all the links on a webpage
 def get_links(url_list, layer):
     hrefs = []
     url_layer = []
+    #print('url_list {}'.format(clean_urls))
     for url in url_list:
         try:
             if(validators.url(url)):
                 soup = BeautifulSoup(requests.get(url, timeout=20).content, 'lxml')
                 hrefs = soup.find_all('a')
+                print('Finding relationship for {}'.format(url))
                 url_layer = url_layer + establish_relationships(url, hrefs, layer)
         except TypeError:
             print(TypeError)
@@ -79,7 +83,28 @@ def get_links(url_list, layer):
         except Exception as e:
             print(e)
             continue
-    urls_to_process.append(url_layer)
+    #print('url_layer : {}'.format(url_layer))
+    dicList = list(dict.fromkeys(url_layer))
+    #dicList = get_clean_urls(dicList)
+    #print('dicList : {}'.format(dicList))
+    urls_to_process.append(dicList)
+
+def get_clean_urls(url_list):
+    cleaned_urls = []
+    cleanUrl = ''
+    for url in url_list:
+        parsedUrl = urlparse(url)
+        cleanUrl = url.replace(parsedUrl.query, "")
+        cleanUrl = cleanUrl.replace("?","")
+        cleaned_urls.append(cleanUrl)
+    return cleaned_urls
+
+def get_clean_url_single(url):
+    clean_url = ''
+    parsedUrl = urlparse(url)
+    clean_url = url.replace(parsedUrl.query, "")
+    clean_url = clean_url.replace("?", "")
+    return clean_url
 
 """
 Takes a from url and a set of hrefs that are related to it,
@@ -87,17 +112,20 @@ Saves the relationship using a dict in a list.
 """
 def establish_relationships(source_url, hrefs, layer):
     destination_urls = []
+    urls = []
     for item in hrefs:
         link = item.get('href')
-        # print(source_url)
-        # print(link)
+        print("source url : {}".format(source_url))
         broken_down_link = parse_url(link)
+        if (broken_down_link is not None):
+            broken_down_link = get_clean_url_single(broken_down_link)
+        print("link : {} brokenDown : {}".format(link, broken_down_link))
         if(broken_down_link and (broken_down_link not in urls_to_process) and (broken_down_link not in urls_already_processed) and (broken_down_link != source_url)):
             # print(link + "---"+ broken_down_link)
             if(check_manual_URL_rules(broken_down_link)):
                 destination_urls.append(broken_down_link)
             relationships.append({'from':source_url, 'to':broken_down_link, 'layer':layer})
-            print(layer)
+            #print("layer {}, link {}".format(layer, broken_down_link))
     urls_already_processed.add(source_url)
     return destination_urls
 
@@ -105,7 +133,7 @@ def establish_relationships(source_url, hrefs, layer):
 Function which includes manual rules for validations
 """
 def check_manual_URL_rules(link):
-    blacklist = ['spotify', 'boulderoem']
+    blacklist = ['spotify', 'boulderoem', 'facebook', 'instagram']
     hostname = urlparse(link).netloc.split('.')
     if(not any(item in hostname for item in blacklist)):
         return True
@@ -138,14 +166,17 @@ def main():
     #Loop over urls in queue, and get their links and
     #establish their relationships
 
+    print('Links to process')
+    for url in urls_to_process:
+        print('url : {}'.format(url))
     for layer in range(0,NUMBER_OF_LAYERS_TO_PROCESS):
         if(len(urls_to_process) != 0):
             get_links(urls_to_process.pop(0), layer+1)
         else:
             break
 
-    # print('printing urls already processed!!!!')
-    # print(urls_already_processed)
+     #print('printing urls already processed!!!!')
+     #print(urls_already_processed)
     # print('printing urls already processed!!!!')
 
 
