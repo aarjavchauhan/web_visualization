@@ -5,6 +5,7 @@ import os
 from urllib.parse import urlparse, urljoin
 import validators
 import json
+import sys
 
 # list storing URLs from a file
 urls_from_file = []
@@ -15,7 +16,7 @@ urls_already_processed = set()
 # list storing dictionaries of relationships
 relationships = []
 
-file = 'participant_2/data_0.json'
+file = sys.argv[1]
 
 """
 Helps read files, especially on windows
