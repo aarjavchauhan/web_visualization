@@ -4,14 +4,16 @@ import json
 file_name = ''
 folder_path = ''
 
+file = 'participant_2.json'
+
 def find_file():
     THIS_FOLDER = os.path.dirname(os.path.abspath(__file__))
-    file_name = os.path.join(THIS_FOLDER, 'rmarton_3.6.21.json')
+    file_name = os.path.join(THIS_FOLDER, file)
     return file_name
 
 def create_folder():
     THIS_FOLDER = os.path.dirname(os.path.abspath(__file__))
-    file_name = os.path.join(THIS_FOLDER, 'rmarton_3.6.21.json')
+    file_name = os.path.join(THIS_FOLDER, file)
     folder_name = file_name.replace('.json', '')
     path = os.path.join(THIS_FOLDER, folder_name)
     os.mkdir(path)
@@ -25,7 +27,7 @@ def read_file_json(file_name):
             temp_file_name = 'data_{}.json'.format(i)
             temp_file_name = os.path.join(folder_path, temp_file_name)
             with open(temp_file_name, 'w') as f:
-                json.dump(pretty_json[i], f)
+                json.dump([pretty_json[i]], f)
         
 file_name = find_file()
 

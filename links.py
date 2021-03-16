@@ -15,13 +15,15 @@ urls_already_processed = set()
 # list storing dictionaries of relationships
 relationships = []
 
+file = 'participant_2/data_0.json'
+
 """
 Helps read files, especially on windows
 returns a python readable file location
 """
 def find_file():
     THIS_FOLDER = os.path.dirname(os.path.abspath(__file__))
-    file_name = os.path.join(THIS_FOLDER, 'data1.json')
+    file_name = os.path.join(THIS_FOLDER, file)
     return file_name
 
 """
