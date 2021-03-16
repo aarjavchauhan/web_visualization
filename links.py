@@ -18,6 +18,8 @@ relationships = []
 
 file = sys.argv[1]
 
+source_links = []
+
 """
 Helps read files, especially on windows
 returns a python readable file location
@@ -56,6 +58,7 @@ def read_file_json(file_name):
         #for struct in pretty_json:
         for struct in pretty_json:
             parsed_url = parse_url(struct["url"])
+            source_links.append(parsed_url)
             if parsed_url:
                 urls_from_file.append(parsed_url)
             
@@ -203,7 +206,7 @@ if __name__== "__main__":
 
   nodes = [{'name': s, 'secondLevelDomain': get_second_level_domain(s)} for s in urls_already_processed_list ]
 
-  dataset = {'nodes': nodes, 'edges': edges }
+  dataset = {'nodes': nodes, 'edges': edges, 'historyLinks': source_links }
 
   print('\n\n\nPrinting Dataset \n\n\n')
   print(dataset)

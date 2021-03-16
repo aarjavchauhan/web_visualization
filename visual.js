@@ -88,7 +88,7 @@ d3.json("results.json", function(error, graph) {
 
   	var circle = node.append("circle")
     	.style(tocolor, function(d, i) {
-			if(historyLinks.includes(d.name)) {
+			if(graph.historyLinks.includes(d.name)) {
             	return "red";
 			}
             if(d.secondLevelDomain == 'org') {
