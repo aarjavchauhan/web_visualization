@@ -76,7 +76,7 @@ def get_links(url_list, layer):
             if(validators.url(url)):
                 soup = BeautifulSoup(requests.get(url, timeout=20).content, 'lxml')
                 hrefs = soup.find_all('a')
-                print('Finding relationship for {}'.format(url))
+                print('File : {} Finding relationship for {} at layer {}'.format(file, url, layer))
                 url_layer = url_layer + establish_relationships(url, hrefs, layer)
         except TypeError:
             print(TypeError)
@@ -122,11 +122,11 @@ def establish_relationships(source_url, hrefs, layer):
     urls = []
     for item in hrefs:
         link = item.get('href')
-        print("source url : {}".format(source_url))
+        #print("source url : {}".format(source_url))
         broken_down_link = parse_url(link)
         if (broken_down_link is not None):
             broken_down_link = get_clean_url_single(broken_down_link)
-        print("link : {} brokenDown : {}".format(link, broken_down_link))
+        #print("link : {} brokenDown : {}".format(link, broken_down_link))
         if(broken_down_link and (broken_down_link not in urls_to_process) and (broken_down_link not in urls_already_processed) and (broken_down_link != source_url)):
             # print(link + "---"+ broken_down_link)
             if(check_manual_URL_rules(broken_down_link)):
