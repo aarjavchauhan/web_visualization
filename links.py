@@ -72,13 +72,13 @@ def get_links(url_list, layer):
     url_layer = []
     #print('url_list {}'.format(clean_urls))
     for url in url_list:
+        if(layer == 2 and ".org" not in url):
+            continue
         try:
             if(validators.url(url)):
                 soup = BeautifulSoup(requests.get(url, timeout=20).content, 'lxml')
                 hrefs = soup.find_all('a')
                 print('File : {} Finding relationship for {} at layer {}'.format(file, url, layer))
-                if(layer == 2 and ".org" not in url):
-                    continue
                 url_layer = url_layer + establish_relationships(url, hrefs, layer)
         except TypeError:
             print(TypeError)

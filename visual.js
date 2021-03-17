@@ -42,7 +42,7 @@ var zoom = d3.behavior.zoom().scaleExtent([min_zoom,max_zoom])
 var g = svg.append("g");
 svg.style("cursor","move");
 
-d3.json("p2_3_scraped.json", function(error, graph) {
+d3.json("p2_4_scraped.json", function(error, graph) {
 
 	var linkedByIndex = {};
 
