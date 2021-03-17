@@ -77,6 +77,8 @@ def get_links(url_list, layer):
                 soup = BeautifulSoup(requests.get(url, timeout=20).content, 'lxml')
                 hrefs = soup.find_all('a')
                 print('File : {} Finding relationship for {} at layer {}'.format(file, url, layer))
+                if(layer == 2 and ".org" not in url):
+                    continue
                 url_layer = url_layer + establish_relationships(url, hrefs, layer)
         except TypeError:
             print(TypeError)
@@ -132,11 +134,7 @@ def establish_relationships(source_url, hrefs, layer):
             if(check_manual_URL_rules(broken_down_link)):
                 destination_urls.append(broken_down_link)
 
-            if (layer == 2):
-                if('.org' in source_url):
-                    relationships.append({'from':source_url, 'to':broken_down_link, 'layer':layer})
-            else:
-                relationships.append({'from':source_url, 'to':broken_down_link, 'layer':layer})
+            relationships.append({'from':source_url, 'to':broken_down_link, 'layer':layer})
             #print("layer {}, link {}".format(layer, broken_down_link))
     urls_already_processed.add(source_url)
     return destination_urls
