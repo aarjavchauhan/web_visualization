@@ -42,7 +42,7 @@ var zoom = d3.behavior.zoom().scaleExtent([min_zoom,max_zoom])
 var g = svg.append("g");
 svg.style("cursor","move");
 
-d3.json("results.json", function(error, graph) {
+d3.json("results_cleaned.json", function(error, graph) {
 
 	var linkedByIndex = {};
 
@@ -88,6 +88,9 @@ d3.json("results.json", function(error, graph) {
 
   	var circle = node.append("circle")
     	.style(tocolor, function(d, i) {
+    	    if (graph.historyLinks.includes(d.name) && d.secondLevelDomain == 'org') {
+    	        return "orange";
+    	    }
 			if(graph.historyLinks.includes(d.name)) {
             	return "red";
 			}
@@ -181,14 +184,16 @@ d3.json("results.json", function(error, graph) {
 		circle.style(towhite, function(o) {
                 return isConnected(d, o) ? highlight_color : "white";
 		});
-		
+
 		text.style("font-weight", function(o) {
 			if (isConnected(d, o)) {
 				if (d == o) {
                 	return "bold";
             	} else {
                 	return "normal";
-                }
+                }text.style("background-color", function(o){
+                		    return "yellow"; 
+                		});
 			} else {
             	return "normal";
             }
@@ -202,6 +207,9 @@ d3.json("results.json", function(error, graph) {
                 }
 			}
 		);
+		text.style("background-color", function(o){
+				    return "yellow"; 
+				});
       	link.style("stroke", function(o) {
 			return o.source.index == d.index || o.target.index == d.index ? highlight_color : default_link_color;
 		});

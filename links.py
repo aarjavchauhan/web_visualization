@@ -17,6 +17,7 @@ urls_already_processed = set()
 relationships = []
 
 file = sys.argv[1]
+output_file = file.replace(".json", "_scraped.json")
 
 source_links = []
 
@@ -139,7 +140,7 @@ def establish_relationships(source_url, hrefs, layer):
 Function which includes manual rules for validations
 """
 def check_manual_URL_rules(link):
-    blacklist = ['spotify', 'boulderoem', 'facebook', 'instagram']
+    blacklist = ['spotify', 'facebook', 'instagram', 'google', 'youtube', 'twitter', 'duckduckgo']
     hostname = urlparse(link).netloc.split('.')
     if(not any(item in hostname for item in blacklist)):
         return True
@@ -186,7 +187,7 @@ def main():
     # print('printing urls already processed!!!!')
 
 
-    with open('results.json', 'w') as f:
+    with open(output_file, 'w') as f:
         json.dump(relationships, f)
 
 
@@ -211,5 +212,5 @@ if __name__== "__main__":
   print('\n\n\nPrinting Dataset \n\n\n')
   print(dataset)
 
-  with open('results.json', 'w') as f:
+  with open(output_file, 'w') as f:
      json.dump(dataset, f)
