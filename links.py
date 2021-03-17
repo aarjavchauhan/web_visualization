@@ -140,9 +140,11 @@ def establish_relationships(source_url, hrefs, layer):
 Function which includes manual rules for validations
 """
 def check_manual_URL_rules(link):
-    blacklist = ['spotify', 'facebook', 'instagram', 'google', 'youtube', 'twitter', 'duckduckgo']
+    blacklist = ['spotify', 'facebook', 'instagram', 'google', 'youtube', 'twitter', 'duckduckgo', '.pdf']
+    pdf = '.pdf'
     hostname = urlparse(link).netloc.split('.')
-    if(not any(item in hostname for item in blacklist)):
+    path = urlparse(link).path
+    if(not any(item in hostname for item in blacklist) and pdf not in path):
         return True
     return False
 
