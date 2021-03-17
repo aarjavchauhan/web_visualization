@@ -20,10 +20,12 @@ var highlight_trans = 0.1;
 var size = d3.scale.pow().exponent(1)
 	.domain([1,100])
 	.range([8,24]);
+	
 force = d3.layout.force()
 	.linkDistance(60)
 	.charge(-300)
-	.size([w,h]);
+	.size([w,h])
+	.gravity(0.1);
 
 var default_node_color = "#ccc";
 var default_link_color = "#888";
@@ -40,7 +42,7 @@ var zoom = d3.behavior.zoom().scaleExtent([min_zoom,max_zoom])
 var g = svg.append("g");
 svg.style("cursor","move");
 
-d3.json("results.json", function(error, graph) {
+d3.json("p2_4_scraped.json", function(error, graph) {
 
 	var linkedByIndex = {};
 
@@ -77,7 +79,7 @@ d3.json("results.json", function(error, graph) {
     	.data(graph.nodes)
     	.enter().append("g")
     	.attr("class", "node")
-        .call(force.drag)
+        .call(force.drag);
 
 
 	var tocolor = "fill";
@@ -86,7 +88,10 @@ d3.json("results.json", function(error, graph) {
 
   	var circle = node.append("circle")
     	.style(tocolor, function(d, i) {
-			if(historyLinks.includes(d.name)) {
+    	    if (graph.historyLinks.includes(d.name) && d.secondLevelDomain == 'org') {
+    	        return "orange";
+    	    }
+			if(graph.historyLinks.includes(d.name)) {
             	return "red";
 			}
             if(d.secondLevelDomain == 'org') {
@@ -179,14 +184,16 @@ d3.json("results.json", function(error, graph) {
 		circle.style(towhite, function(o) {
                 return isConnected(d, o) ? highlight_color : "white";
 		});
-		
+
 		text.style("font-weight", function(o) {
 			if (isConnected(d, o)) {
 				if (d == o) {
                 	return "bold";
             	} else {
                 	return "normal";
-                }
+                }text.style("background-color", function(o){
+                		    return "yellow"; 
+                		});
 			} else {
             	return "normal";
             }
@@ -200,6 +207,9 @@ d3.json("results.json", function(error, graph) {
                 }
 			}
 		);
+		text.style("background-color", function(o){
+				    return "yellow"; 
+				});
       	link.style("stroke", function(o) {
 			return o.source.index == d.index || o.target.index == d.index ? highlight_color : default_link_color;
 		});
@@ -223,6 +233,8 @@ d3.json("results.json", function(error, graph) {
 
 	d3.select(window).on("resize", resize);
 
+    var i = 0;
+        
 	force.on("tick", function() {
 
 		node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
@@ -235,9 +247,15 @@ d3.json("results.json", function(error, graph) {
 
     	node.attr("cx", function(d) { return d.x; })
       		.attr("cy", function(d) { return d.y; });
+        if (i < 300) {
+            ++i;
+        } else {
+            force.stop();   
+        }
 	});
+	
 
-	function resize() {
+    function resize() {
 		var width = window.innerWidth, height = window.innerHeight;
 		svg.attr("width", width).attr("height", height);
 
