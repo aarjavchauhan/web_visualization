@@ -131,7 +131,12 @@ def establish_relationships(source_url, hrefs, layer):
             # print(link + "---"+ broken_down_link)
             if(check_manual_URL_rules(broken_down_link)):
                 destination_urls.append(broken_down_link)
-            relationships.append({'from':source_url, 'to':broken_down_link, 'layer':layer})
+
+            if (layer == 2):
+                if('.org' in source_url):
+                    relationships.append({'from':source_url, 'to':broken_down_link, 'layer':layer})
+            else:
+                relationships.append({'from':source_url, 'to':broken_down_link, 'layer':layer})
             #print("layer {}, link {}".format(layer, broken_down_link))
     urls_already_processed.add(source_url)
     return destination_urls
