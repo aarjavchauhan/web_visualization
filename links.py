@@ -6,6 +6,7 @@ from urllib.parse import urlparse, urljoin
 import validators
 import json
 import sys
+import tldextract
 
 # list storing URLs from a file
 urls_from_file = []
@@ -18,6 +19,8 @@ relationships = []
 
 file = sys.argv[1]
 output_file = file.replace(".json", "_scraped.json")
+
+layer_2_domain_set = set()
 
 source_links = []
 
@@ -72,8 +75,16 @@ def get_links(url_list, layer):
     url_layer = []
     #print('url_list {}'.format(clean_urls))
     for url in url_list:
+        print("\n")
+        print("starting in {}".format(url))
         if(layer == 2 and ".org" not in url):
             continue
+        only_domain = get_domain(url)
+        if(layer == 2 and only_domain in layer_2_domain_set):
+            print("skipping {} for {}".format(only_domain, url))
+            continue
+        print("trying {}".format(urlparse(url)))
+        layer_2_domain_set.add(only_domain)
         try:
             if(validators.url(url)):
                 soup = BeautifulSoup(requests.get(url, timeout=20).content, 'lxml')
@@ -114,6 +125,9 @@ def get_clean_url_single(url):
     clean_url = url.replace(parsedUrl.query, "")
     clean_url = clean_url.replace("?", "")
     return clean_url
+
+def get_domain(url):
+    return tldextract.extract(url).domain
 
 """
 Takes a from url and a set of hrefs that are related to it,
