@@ -75,21 +75,21 @@ def get_links(url_list, layer):
     url_layer = []
     #print('url_list {}'.format(clean_urls))
     for url in url_list:
-        print("\n")
-        print("starting in {}".format(url))
+        #print("\n")
+        #print("starting in {}".format(url))
         if(layer == 2 and ".org" not in url):
             continue
         only_domain = get_domain(url)
         if(layer == 2 and only_domain in layer_2_domain_set):
-            print("skipping {} for {}".format(only_domain, url))
+            #print("skipping {} for {}".format(only_domain, url))
             continue
-        print("trying {}".format(urlparse(url)))
+        #print("trying {}".format(urlparse(url)))
         layer_2_domain_set.add(only_domain)
         try:
             if(validators.url(url)):
                 soup = BeautifulSoup(requests.get(url, timeout=20).content, 'lxml')
                 hrefs = soup.find_all('a')
-                print('File : {} Finding relationship for {} at layer {}'.format(file, url, layer))
+                print('File : {} Relationship for {} at layer {}'.format(file, url, layer))
                 url_layer = url_layer + establish_relationships(url, hrefs, layer)
         except TypeError:
             print(TypeError)
