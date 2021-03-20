@@ -117,19 +117,29 @@ d3.json("main.json", function(error, graph) {
 		.style("font-size", nominal_text_size + "px")
 
 
-	node.on("mouseover", function(d) {
-			set_highlight(d);
-		})
-  		.on("mousedown", function(d) {   		
-  			d3.event.stopPropagation();
-  			focus_node = d;
-			set_focus(d)
-			if (highlight_node === null) 
-				set_highlight(d);	
-		})
-		.on("mouseout", function(d) {
-			exit_highlight();
-		});
+	// node.on("mouseover", function(d) {
+			// set_highlight(d);
+		// })
+  		// .on("mousedown", function(d) {
+  			// d3.event.stopPropagation();
+  			// focus_node = d;
+			// set_focus(d)
+			// if (highlight_node === null)
+				// set_highlight(d);
+		// })
+		// .on("mouseout", function(d) {
+			// exit_highlight();
+		// });
+
+    node.on("mouseover", function(d) {
+        set_highlight(d);
+    })
+    .on("click", function(d) {
+        set_highlight(d);
+    });
+    // node.on("mouseout", function(d) {
+        // exit_highlight();
+    // });
 
 
 	d3.select(window).on("mouseup", function() {
@@ -187,17 +197,26 @@ d3.json("main.json", function(error, graph) {
 
 		text.style("font-weight", function(o) {
 			if (isConnected(d, o)) {
-				if (d == o) {
+				if (d == o) { // if it is the selected one
                 	return "bold";
             	} else {
                 	return "normal";
-                }text.style("background-color", function(o){
-                		    return "yellow"; 
-                		});
+                }
 			} else {
             	return "normal";
             }
 		});
+
+        text.style("opacity", function(o) {
+            if (isConnected(d, o)) {
+                if (d == o) {
+                    return 1;
+                } else {
+                    return 0.4;
+                }
+            }  
+        });
+		
 		text.attr("dx", nominal_base_node_size)
         	.text(function(o) {
             	if (isConnected(d, o)) {
@@ -207,9 +226,7 @@ d3.json("main.json", function(error, graph) {
                 }
 			}
 		);
-		text.style("background-color", function(o){
-				    return "yellow"; 
-				});
+
       	link.style("stroke", function(o) {
 			return o.source.index == d.index || o.target.index == d.index ? highlight_color : default_link_color;
 		});
