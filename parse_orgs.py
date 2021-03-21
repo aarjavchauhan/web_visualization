@@ -15,7 +15,7 @@ with open(file_name) as file:
             url_set.add(url.netloc)
 
 print(url_set)
-with open(file_name.replace(".json", ".txt"), 'w') as f:
+with open(file_name.replace("_scraped.json", "_unique.txt"), 'w') as f:
     for item in url_set:
         f.write(item)
         f.write("\n")
