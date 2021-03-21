@@ -7,7 +7,7 @@ var historyLinks = [
 	"https://www.sellingpower.com/2010/02/02/8094/venita-vancaspel"
 ];
 
-var focus_node = null, highlight_node = null;
+var focus_node = null, highlight_node = null, clicked_node = null;
 
 var text_center = false;
 
@@ -16,6 +16,8 @@ var max_score = 1;
 
 var highlight_color = "red";
 var highlight_trans = 0.1;
+
+var stick = false;
 
 var size = d3.scale.pow().exponent(1)
 	.domain([1,100])
@@ -38,11 +40,12 @@ var max_base_node_size = 36;
 var min_zoom = 0.1;
 var max_zoom = 7;
 var svg = d3.select("body").append("svg");
+// var svg = d3.select("body").append("canvas").node().getContext('2d');
 var zoom = d3.behavior.zoom().scaleExtent([min_zoom,max_zoom])
 var g = svg.append("g");
 svg.style("cursor","move");
 
-d3.json("p2_1_scraped.json", function(error, graph) {
+d3.json(filename, function(error, graph) {
 
 	var linkedByIndex = {};
 
@@ -55,11 +58,12 @@ d3.json("p2_1_scraped.json", function(error, graph) {
     }
 
 	function hasConnections(a) {
-		for (var property in linkedByIndex) {
-				s = property.split(",");
-				if ((s[0] == a.index || s[1] == a.index) && linkedByIndex[property]) 					return true;
-		}
-		return false;
+        for (var property in linkedByIndex) {
+            s = property.split(",");
+            if ((s[0] == a.index || s[1] == a.index) && linkedByIndex[property]) 					
+          return true;
+    }
+        return false;
 	}
 
   	force
@@ -81,10 +85,8 @@ d3.json("p2_1_scraped.json", function(error, graph) {
     	.attr("class", "node")
         .call(force.drag);
 
-
 	var tocolor = "fill";
 	var towhite = "stroke";
-
 
   	var circle = node.append("circle")
     	.style(tocolor, function(d, i) {
@@ -116,21 +118,27 @@ d3.json("p2_1_scraped.json", function(error, graph) {
 		.attr("dy", ".35em")
 		.style("font-size", nominal_text_size + "px")
 
-
-	node.on("mouseover", function(d) {
-			set_highlight(d);
-		})
-  		.on("mousedown", function(d) {   		
-  			d3.event.stopPropagation();
-  			focus_node = d;
-			set_focus(d)
-			if (highlight_node === null) 
-				set_highlight(d);	
-		})
-		.on("mouseout", function(d) {
-			exit_highlight();
-		});
-
+    node.on("mouseover", function(d) {
+        if (!stick) {
+            set_highlight(d);
+        }
+    })
+    .on("click", function(d) {
+        stick = true;
+        if (clicked_node == d) {
+            clicked_node = null;
+            stick = false;
+            exit_highlight();
+        } else {
+            clicked_node = d;
+            set_highlight(d);
+        }
+    });
+    node.on("mouseout", function(d) {
+        if (!stick) {
+            exit_highlight();
+        }
+    });
 
 	d3.select(window).on("mouseup", function() {
 		if (focus_node!==null) {
@@ -181,23 +189,40 @@ d3.json("p2_1_scraped.json", function(error, graph) {
 			d = focus_node;
 			
 		highlight_node = d;
+		
 		circle.style(towhite, function(o) {
-                return isConnected(d, o) ? highlight_color : "white";
+            return isConnected(d, o) ? highlight_color : "white";
+		});
+		circle.style("stroke-width", function(o) {
+		    if (d == o) {
+		        return 2;
+		    } else {
+                return nominal_stroke;
+		    }
 		});
 
 		text.style("font-weight", function(o) {
 			if (isConnected(d, o)) {
-				if (d == o) {
+				if (d == o) { // if it is the selected one
                 	return "bold";
             	} else {
                 	return "normal";
-                }text.style("background-color", function(o){
-                		    return "yellow"; 
-                		});
+                }
 			} else {
             	return "normal";
             }
 		});
+
+        text.style("opacity", function(o) {
+            if (isConnected(d, o)) {
+                if (d == o) {
+                    return 1;
+                } else {
+                    return 0.4;
+                }
+            }  
+        });
+		
 		text.attr("dx", nominal_base_node_size)
         	.text(function(o) {
             	if (isConnected(d, o)) {
@@ -207,9 +232,7 @@ d3.json("p2_1_scraped.json", function(error, graph) {
                 }
 			}
 		);
-		text.style("background-color", function(o){
-				    return "yellow"; 
-				});
+
       	link.style("stroke", function(o) {
 			return o.source.index == d.index || o.target.index == d.index ? highlight_color : default_link_color;
 		});
@@ -247,7 +270,7 @@ d3.json("p2_1_scraped.json", function(error, graph) {
 
     	node.attr("cx", function(d) { return d.x; })
       		.attr("cy", function(d) { return d.y; });
-        if (i < 300) {
+        if (i < 30) {
             ++i;
         } else {
             force.stop();   
