@@ -7,7 +7,7 @@ var historyLinks = [
 	"https://www.sellingpower.com/2010/02/02/8094/venita-vancaspel"
 ];
 
-var focus_node = null, highlight_node = null;
+var focus_node = null, highlight_node = null, clicked_node = null;
 
 var text_center = false;
 
@@ -16,6 +16,8 @@ var max_score = 1;
 
 var highlight_color = "red";
 var highlight_trans = 0.1;
+
+var stick = false;
 
 var size = d3.scale.pow().exponent(1)
 	.domain([1,100])
@@ -116,31 +118,27 @@ d3.json("main.json", function(error, graph) {
 		.attr("dy", ".35em")
 		.style("font-size", nominal_text_size + "px")
 
-
-	// node.on("mouseover", function(d) {
-			// set_highlight(d);
-		// })
-  		// .on("mousedown", function(d) {
-  			// d3.event.stopPropagation();
-  			// focus_node = d;
-			// set_focus(d)
-			// if (highlight_node === null)
-				// set_highlight(d);
-		// })
-		// .on("mouseout", function(d) {
-			// exit_highlight();
-		// });
-
     node.on("mouseover", function(d) {
-        set_highlight(d);
+        if (!stick) {
+            set_highlight(d);
+        }
     })
     .on("click", function(d) {
-        set_highlight(d);
+        stick = true;
+        if (clicked_node == d) {
+            clicked_node = null;
+            stick = false;
+            exit_highlight();
+        } else {
+            clicked_node = d;
+            set_highlight(d);
+        }
     });
-    // node.on("mouseout", function(d) {
-        // exit_highlight();
-    // });
-
+    node.on("mouseout", function(d) {
+        if (!stick) {
+            exit_highlight();
+        }
+    });
 
 	d3.select(window).on("mouseup", function() {
 		if (focus_node!==null) {
@@ -191,8 +189,16 @@ d3.json("main.json", function(error, graph) {
 			d = focus_node;
 			
 		highlight_node = d;
+		
 		circle.style(towhite, function(o) {
-                return isConnected(d, o) ? highlight_color : "white";
+            return isConnected(d, o) ? highlight_color : "white";
+		});
+		circle.style("stroke-width", function(o) {
+		    if (d == o) {
+		        return 2;
+		    } else {
+                return nominal_stroke;
+		    }
 		});
 
 		text.style("font-weight", function(o) {
